@@ -69,6 +69,8 @@ start()
 
 // 
 const {get:getRiegoManual, update:updateRiegoManual} = require('./serverRequests/riego')
+const {get:getRiegoAuto} = require('./serverRequests/riegoAuto')
+
 
 // Defining the serial port
 const serialport = new SerialPort({ 
@@ -103,7 +105,7 @@ setInterval(async () => {
 
   // openmanual = openmanual=== "1" ? "0" : "1"
 
-
+  // --- check on automated  irrigation ---
   // --- writing on serial port --- 
   serialport.write(openmanual);  
 
