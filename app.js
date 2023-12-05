@@ -99,16 +99,32 @@ setInterval(async () => {
 
   // --- check on manual irrigation ---
 
-  openauto = await getRiegoManual() === true ? '1': '0';
+  let openmanualNew = await getRiegoManual() === true ? '1': '0';
 
-  openauto === '1' ? updateRiegoManual(false) : void 0; // si es true, que la vuelva a cerrar
+  openmanualNew === '1' ? updateRiegoManual(false) : void 0; // si es true, que la vuelva a cerrar
 
   // openmanual = openmanual=== "1" ? "0" : "1"
 
   // --- check on automated  irrigation ---
-  // --- writing on serial port --- 
-  serialport.write(openmanual);  
 
-  serialport.write(openauto);
+  let openautoNew = await getRiegoAuto() === true ? '1': '0';
+
+  // --- writing on serial port --- 
+
+  // just write on serial port when the value changes on the DB, avoiding 'delays' issues on Arduino due to sending to much data
+  if ((openauto != openautoNew) || (openmanual != openmanualNew)) {
+    // console.log('changes');
+
+    //updating, then writing new values
+
+    openmanual = openmanualNew;
+    openauto = openautoNew;
+
+    serialport.write(openmanual);
+    serialport.write(openauto);
+  }
+
+  
+  
 }, 2000);
 
