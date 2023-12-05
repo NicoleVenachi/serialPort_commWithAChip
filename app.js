@@ -9,43 +9,58 @@ const connectDB = require('./db/connect')
 
 const admin = require('firebase-admin');
 
-
 // db connection
 const start = async () => {
   try {
     connectDB(process.env.FIREBASE_URL)
+
     //db connection
     console.log('Succesfully connected to the db ...');
 
+    const {get:getRiegoManual, update:updateRiegoManual} = require('./serverRequests/riego')
 
-    const database = admin.database();
-    const dataRef = database.ref('/DATA');
+    getRiegoManual()
+      .then((data) => console.log(data))
+      .catch((err) => console.error('[Error]: On fetching the manual irriagation state'))
+    
+    updateRiegoManual(true)
+      .then((data) => console.log(data))
+      .catch((err) => console.error('[Error]: On updating the manual irriagation state'))
+    
+    getRiegoManual()
+    .then((data) => console.log(data))
+    .catch((err) => console.error('[Error]: On fetching the manual irriagation state'))
 
-    dataRef.orderByKey().on('value', (snapshot) => {
-      let dataRes = {};
-      let lastFilter = 1;
-      if (lastFilter == null){
-        dataRes = snapshot.val();
-      }
-      else {
-         //json to data
-        mH = Object.values(snapshot.val().meanHumidity)
-        mL = Object.values(snapshot.val().meanLuxP)
-        mT = Object.values(snapshot.val().meanTemperature)
+
+
+    // const database = admin.database();
+    // const dataRef = database.ref('/DATA');
+
+    // dataRef.orderByKey().on('value', (snapshot) => {
+    //   let dataRes = {};
+    //   let lastFilter = 1;
+    //   if (lastFilter == null){
+    //     dataRes = snapshot.val();
+    //   }
+    //   else {
+    //      //json to data
+    //     mH = Object.values(snapshot.val().meanHumidity)
+    //     mL = Object.values(snapshot.val().meanLuxP)
+    //     mT = Object.values(snapshot.val().meanTemperature)
       
-        lastH = mH[mH.length -1]
-        lastL = mL[mL.length -1]
-        lastT = mT[mT.length -1]
+    //     lastH = mH[mH.length -1]
+    //     lastL = mL[mL.length -1]
+    //     lastT = mT[mT.length -1]
 
-        dataRes = {
-          meanHumidity: lastH,
-          meanLuxP: lastL,
-          meanTemperature: lastT
-        }
-      console.log(dataRes);
+    //     dataRes = {
+    //       meanHumidity: lastH,
+    //       meanLuxP: lastL,
+    //       meanTemperature: lastT
+    //     }
+    //   console.log(dataRes);
 
-      }
-    });
+    //   }
+    // });
 
   } catch (err) {
     console.error('No connection established to the database');
@@ -56,7 +71,7 @@ const start = async () => {
 start()
 
 
-// Defining the serial port
+// // Defining the serial port
 // const serialport = new SerialPort({ 
 //   path: 'COM6', 
 //   baudRate: 9600 }
@@ -70,18 +85,22 @@ start()
 // // Read the data from the serial port 
 
 // parser.on("data", (line) => {
-//   console.log(line)
+//   console.log(typeof(line))
 //   // serialport.write("0");
 // });
 
 
 // // Write the data to the serial port (to open or close the grifo)
-// let open = "1"
+// let openauto = "1"
+// let openmanual = "0"
+
 // setInterval(() => {
 
 //   // console.log('asd');
-//   open = open=== "1" ? "0" : "1"
+//   openmanual = openmanual=== "1" ? "0" : "1"
 //   // console.log(open);
-//   serialport.write(open);  
+//   serialport.write(openmanual);  
+
+//   serialport.write(openauto);
 // }, 2000);
 
