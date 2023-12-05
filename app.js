@@ -17,20 +17,17 @@ const start = async () => {
     //db connection
     console.log('Succesfully connected to the db ...');
 
-    const {get:getRiegoManual, update:updateRiegoManual} = require('./serverRequests/riego')
+    // getRiegoManual()
+    // .then((data) => console.log(data))
+    // .catch((err) => console.error('[Error]: On fetching the manual irriagation state'))
 
-    getRiegoManual()
-      .then((data) => console.log(data))
-      .catch((err) => console.error('[Error]: On fetching the manual irriagation state'))
-    
-    updateRiegoManual(true)
-      .then((data) => console.log(data))
-      .catch((err) => console.error('[Error]: On updating the manual irriagation state'))
-    
-    getRiegoManual()
-    .then((data) => console.log(data))
-    .catch((err) => console.error('[Error]: On fetching the manual irriagation state'))
+    // updateRiegoManual(true)
+    //   .then((data) => console.log(data))
+    //   .catch((err) => console.error('[Error]: On updating the manual irriagation state'))
 
+    // getRiegoManual()
+    //   .then((data) => console.log(data))
+    //   .catch((err) => console.error('[Error]: On fetching the manual irriagation state'))
 
 
     // const database = admin.database();
@@ -70,37 +67,46 @@ const start = async () => {
 
 start()
 
+// 
+const {get:getRiegoManual, update:updateRiegoManual} = require('./serverRequests/riego')
 
-// // Defining the serial port
-// const serialport = new SerialPort({ 
-//   path: 'COM6', 
-//   baudRate: 9600 }
-// );
-// // serialport.write('WELCOME')
+// Defining the serial port
+const serialport = new SerialPort({ 
+  path: 'COM6', 
+  baudRate: 9600 }
+);
+// serialport.write('WELCOME')
 
-// // Add The Serial port parser
-// const parser = new ReadlineParser();
-// serialport.pipe(parser);
+// Add The Serial port parser
+const parser = new ReadlineParser();
+serialport.pipe(parser);
 
-// // Read the data from the serial port 
+// Read the data from the serial port 
 
-// parser.on("data", (line) => {
-//   console.log(typeof(line))
-//   // serialport.write("0");
-// });
+parser.on("data", (line) => {
+  console.log(line)
+  // serialport.write("0");
+});
 
 
-// // Write the data to the serial port (to open or close the grifo)
-// let openauto = "1"
-// let openmanual = "0"
+// Write the data to the serial port (to open or close the grifo)
+let openauto = "0"
+let openmanual = "0"
 
-// setInterval(() => {
+setInterval(async () => {
 
-//   // console.log('asd');
-//   openmanual = openmanual=== "1" ? "0" : "1"
-//   // console.log(open);
-//   serialport.write(openmanual);  
+  // --- check on manual irrigation ---
 
-//   serialport.write(openauto);
-// }, 2000);
+  openauto = await getRiegoManual() === true ? '1': '0';
+
+  openauto === '1' ? updateRiegoManual(false) : void 0; // si es true, que la vuelva a cerrar
+
+  // openmanual = openmanual=== "1" ? "0" : "1"
+
+
+  // --- writing on serial port --- 
+  serialport.write(openmanual);  
+
+  serialport.write(openauto);
+}, 2000);
 
