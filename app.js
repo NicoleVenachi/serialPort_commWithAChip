@@ -32,6 +32,21 @@ const start = async () => {
     const {get:getData} = require('./serverRequests/data')
     let sensorsData = await getData(null);
     console.log(Object.keys(sensorsData.meanHumidity).length);
+    console.log(Object.keys(sensorsData.meanLuxP).length);
+    console.log(Object.keys(sensorsData.meanTemperature).length);
+
+    // const database = admin.database();
+    // const dataRef = database.ref('/DATA/meanHumidity');
+    // const humRef = admin.firestore().collection('DATA').doc('meanHumidity')
+
+    // console.log(dataRef);
+    // dataRef.push({
+    //   author: 'gracehop',
+    //   title: 'Announcing COBOL, a New Programming Language'
+    // })
+    // console.log();
+
+    // dataRef.push(100)
 
   } catch (err) {
     console.error('No connection established to the database');
@@ -45,41 +60,43 @@ start()
 const {get:getRiegoManual, update:updateRiegoManual} = require('./serverRequests/riego')
 const {get:getRiegoAuto} = require('./serverRequests/riegoAuto')
 
-const {get:getData} = require('./serverRequests/data')
+const {get:getData, pushNewData} = require('./serverRequests/data')
 
+pushNewData(100)
+  .then(a => console.log(a))
+  .catch(err => console.error(err))
+// // Defining the serial port
+// const serialport = new SerialPort({ 
+//   path: 'COM6', 
+//   baudRate: 9600 }
+// );
+// // serialport.write('WELCOME')
 
-// Defining the serial port
-const serialport = new SerialPort({ 
-  path: 'COM6', 
-  baudRate: 9600 }
-);
-// serialport.write('WELCOME')
+// // Add The Serial port parser
+// const parser = new ReadlineParser();
+// serialport.pipe(parser);
 
-// Add The Serial port parser
-const parser = new ReadlineParser();
-serialport.pipe(parser);
+// // Read the data from the serial port 
 
-// Read the data from the serial port 
+// let startTime = performance.now()
+// let endTime;
 
-let startTime = performance.now()
-let endTime;
+// parser.on("data", (line) => {
+//   // console.log(line)
 
-parser.on("data", (line) => {
-  // console.log(line)
+//   endTime = performance.now()
+//   // console.log(endTime-startTime);
 
-  endTime = performance.now()
-  // console.log(endTime-startTime);
-
-  if ((endTime - startTime) > 20000 ) {
-    startTime = performance.now();
-    console.log('uploading....');
-  }
+//   if ((endTime - startTime) > 20000 ) {
+//     startTime = performance.now();
+//     console.log('uploading....');
+//   }
   
 
-  // const {get:getData} = require('./serverRequests/data')
-  // let sensorsData = await getData(null);
-  // serialport.write("0");
-});
+//   // const {get:getData} = require('./serverRequests/data')
+//   // let sensorsData = await getData(null);
+//   // serialport.write("0");
+// });
 
 
 // // Write the data to the serial port (to open or close the grifo)

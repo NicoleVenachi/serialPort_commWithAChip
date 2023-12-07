@@ -1,10 +1,12 @@
 //*****Firebase */
 const admin = require('firebase-admin');
 
-//***** Router */
 const database = admin.database();
 const dataRef = database.ref('/DATA');
 
+const humRef = database.ref('/DATA/meanHumidity');
+const luxRef = database.ref('/DATA/meanLuxP');
+const temRef = database.ref('/DATA/meanTemperature');
 
 //********* CRUD  */
 
@@ -40,7 +42,34 @@ function get(lastFilter) {
     })
 }
 
+async function pushNewData(humidity) {
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      let {meanLuxP, meanTemperature} = await get(true)
+
+      // simulate the light and temperature changes
+      let randomNumber = Number(Math.random().toFixed(2))
+      meanLuxP +=  randomNumber> 0.5 ? 3*randomNumber: -3*randomNumber;
+    
+      randomNumber = Number(Math.random().toFixed(2))
+      meanTemperature +=  randomNumber> 0.5 ? 3*randomNumber: -3*randomNumber;
+      
+      humRef.push(humidity)
+      luxRef.push(Number(meanLuxP.toFixed(5)))
+      temRef.push(Number(meanTemperature.toFixed(5)))
+
+      resolve({meanHumidity: humidity, meanLuxP, meanTemperature})
+    } catch (error) {
+      reject('Error')
+    }
+  })
+
+}
+
+//update con push de nuevos valores
 
 module.exports = {
-    get
+    get,
+    pushNewData
 }
