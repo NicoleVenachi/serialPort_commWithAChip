@@ -71,6 +71,8 @@ start()
 const {get:getRiegoManual, update:updateRiegoManual} = require('./serverRequests/riego')
 const {get:getRiegoAuto} = require('./serverRequests/riegoAuto')
 
+const {get:getData} = require('./serverRequests/data')
+
 
 // Defining the serial port
 const serialport = new SerialPort({ 
@@ -108,6 +110,11 @@ setInterval(async () => {
   // --- check on automated  irrigation ---
 
   let openautoNew = await getRiegoAuto() === true ? '1': '0';
+
+  // -- reading last register data ---
+
+  let sensorsData = await getData(null);
+  console.log(sensorsData);
 
   // --- writing on serial port --- 
 
