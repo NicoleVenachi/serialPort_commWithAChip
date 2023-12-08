@@ -69,9 +69,37 @@ async function pushNewData(humidity) {
 
 }
 
+async function restartData() { //delete false data, just the first 125 rgisters are real
+
+  return new Promise(async (resolve, reject) => {
+    try {
+
+      // -- reading all registers data ---
+      let {meanLuxP, meanTemperature} = await get(null) 
+
+      // simulate the light and temperature changes
+      let randomNumber = Number(Math.random().toFixed(2))
+      meanLuxP +=  randomNumber> 0.5 ? 3*randomNumber: -3*randomNumber;
+    
+      randomNumber = Number(Math.random().toFixed(2))
+      meanTemperature +=  randomNumber> 0.5 ? 2*randomNumber: -2*randomNumber;
+      
+      humRef.push(humidity)
+      luxRef.push(Number(meanLuxP.toFixed(5)))
+      temRef.push(Number(meanTemperature.toFixed(5)))
+
+      resolve({meanHumidity: humidity, meanLuxP, meanTemperature})
+    } catch (error) {
+      reject('Error')
+    }
+  })
+
+}
+
 //update con push de nuevos valores
 
 module.exports = {
     get,
-    pushNewData
+    pushNewData,
+    restartData
 }
