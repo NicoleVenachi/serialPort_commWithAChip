@@ -42,13 +42,29 @@ const start = async () => {
       "e":5
     })
 
-    // console.log(temRef);
-    let keys = Object.keys(sensorsData.meanTemperature).filter((_id, id) => id<126)
+    // find elements to clean (125 para arriba)
+    let humidityData = {...sensorsData.meanHumidity};
+    let keysToClean = Object.keys(humidityData).filter((_id, id) => id>124);
 
-    console.log(keys.reverse());
-    // console.log(Object.keys(sensorsData.meanHumidity).length);
-    // console.log(Object.keys(sensorsData.meanLuxP).length);
-    // console.log(Object.keys(sensorsData.meanTemperature).length);
+
+    // delete dta for these object registers
+    for (const [key,value] of Object.entries(humidityData)) {
+
+      if (keysToClean.includes(key)) {
+        delete humidityData[key];
+      }
+
+    }
+
+    const ref = database.ref(`/DATA/meanHumidity`);
+    ref.set(
+      humidityData
+    )
+
+
+    console.log(Object.keys(sensorsData.meanHumidity).length);
+    console.log(Object.keys(sensorsData.meanLuxP).length);
+    console.log(Object.keys(sensorsData.meanTemperature).length);
 
   } catch (err) {
     console.error('No connection established to the database');
