@@ -46,6 +46,8 @@ async function pushNewData(humidity) {
 
   return new Promise(async (resolve, reject) => {
     try {
+
+      // -- reading last register data ---
       let {meanLuxP, meanTemperature} = await get(true)
 
       // simulate the light and temperature changes
@@ -53,7 +55,7 @@ async function pushNewData(humidity) {
       meanLuxP +=  randomNumber> 0.5 ? 3*randomNumber: -3*randomNumber;
     
       randomNumber = Number(Math.random().toFixed(2))
-      meanTemperature +=  randomNumber> 0.5 ? 3*randomNumber: -3*randomNumber;
+      meanTemperature +=  randomNumber> 0.5 ? 2*randomNumber: -2*randomNumber;
       
       humRef.push(humidity)
       luxRef.push(Number(meanLuxP.toFixed(5)))
