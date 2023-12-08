@@ -17,54 +17,17 @@ const start = async () => {
     //db connection
     console.log('Succesfully connected to the db ...');
 
-    // getRiegoManual()
-    // .then((data) => console.log(data))
-    // .catch((err) => console.error('[Error]: On fetching the manual irriagation state'))
-
-    // updateRiegoManual(true)
-    //   .then((data) => console.log(data))
-    //   .catch((err) => console.error('[Error]: On updating the manual irriagation state'))
-
-    // getRiegoManual()
-    //   .then((data) => console.log(data))
-    //   .catch((err) => console.error('[Error]: On fetching the manual irriagation state'))
-
     // -- reading last register (or all registers) data (125 reales)---
-    const {get:getData} = require('./serverRequests/data')
+    const {get:getData, restartData} = require('./serverRequests/data')
+
     let sensorsData = await getData(null);
 
-    const database = admin.database();
-    // console.log(sensorsData.meanTemperature['-Nl6Qgp-YDr1iZtRtH7z']);
+    console.log(sensorsData);
+      
+    // --- cleaning db registers (to oginial ones) ---
+    restartData()
     
 
-    let temRef = database.ref(`/DATA/a`);
-    temRef.set({
-      "e":5
-    })
-
-    // find elements to clean (125 para arriba)
-    let humidityData = {...sensorsData.meanHumidity};
-    let keysToClean = Object.keys(humidityData).filter((_id, id) => id>124);
-
-
-    // delete dta for these object registers
-    for (const [key,value] of Object.entries(humidityData)) {
-
-      if (keysToClean.includes(key)) {
-        delete humidityData[key];
-      }
-
-    }
-
-    const ref = database.ref(`/DATA/meanHumidity`);
-    ref.set(
-      humidityData
-    )
-
-
-    console.log(Object.keys(sensorsData.meanHumidity).length);
-    console.log(Object.keys(sensorsData.meanLuxP).length);
-    console.log(Object.keys(sensorsData.meanTemperature).length);
 
   } catch (err) {
     console.error('No connection established to the database');

@@ -75,20 +75,19 @@ async function restartData() { //delete false data, just the first 125 rgisters 
     try {
 
       // -- reading all registers data ---
-      let {meanLuxP, meanTemperature} = await get(null) 
-
-      // simulate the light and temperature changes
-      let randomNumber = Number(Math.random().toFixed(2))
-      meanLuxP +=  randomNumber> 0.5 ? 3*randomNumber: -3*randomNumber;
-    
-      randomNumber = Number(Math.random().toFixed(2))
-      meanTemperature +=  randomNumber> 0.5 ? 2*randomNumber: -2*randomNumber;
+      let sensorsData = await get(null);
       
-      humRef.push(humidity)
-      luxRef.push(Number(meanLuxP.toFixed(5)))
-      temRef.push(Number(meanTemperature.toFixed(5)))
+      // delete
+      replaceInnerRegister({...sensorsData.meanHumidity}, 'meanHumidity') //send a copy of the data to clean
+      replaceInnerRegister({...sensorsData.meanLuxP}, 'meanLuxP')
+      replaceInnerRegister({...sensorsData.meanTemperature}, 'meanTemperature')
 
-      resolve({meanHumidity: humidity, meanLuxP, meanTemperature})
+      //prin number of registers
+      sensorsData = await get(null);
+      console.log(Object.keys(sensorsData.meanHumidity).length);
+      console.log(Object.keys(sensorsData.meanLuxP).length);
+      console.log(Object.keys(sensorsData.meanTemperature).length);
+
     } catch (error) {
       reject('Error')
     }
@@ -102,4 +101,26 @@ module.exports = {
     get,
     pushNewData,
     restartData
+}
+
+function replaceInnerRegister (sensorData, _idName) {
+
+   // find elements to clean (125 para arriba)
+   let keysToClean = Object.keys(sensorData).filter((_id, id) => id>124);
+
+   // delete dta for these object registers
+   for (const key in sensorData) {
+
+     if (keysToClean.includes(key)) { 
+       delete sensorData[key]; 
+     }
+
+   }
+
+   //update collection without cleanead data
+   const ref = database.ref(`/DATA/${_idName}`);
+   ref.set(
+    sensorData
+   )
+
 }
