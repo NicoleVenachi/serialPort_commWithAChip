@@ -18,14 +18,14 @@ const start = async () => {
     console.log('Succesfully connected to the db ...');
 
     // -- reading last register (or all registers) data (125 reales)---
-    // const {get:getData, restartData} = require('./serverRequests/data')
+    const {get:getData, restartData} = require('./serverRequests/data')
 
     // let sensorsData = await getData(null);
 
     // console.log(sensorsData);
       
     // --- cleaning db registers (to oginial ones) ---
-    // restartData()
+    restartData()
     
 
 
@@ -46,7 +46,7 @@ const {get:getData, pushNewData} = require('./serverRequests/data')
 
 // Defining the serial port
 const serialport = new SerialPort({ 
-  path: 'COM6', 
+  path: 'COM7', 
   baudRate: 9600 }
 );
 // serialport.write('WELCOME')
@@ -61,16 +61,24 @@ let startTime = performance.now()
 let endTime;
 
 parser.on("data", async (line) => {
-  let humidity = Number(line)
-  console.log(humidity) // readed humidity
+  console.log('----------')
+  let [humidity, meanLuxP, meanTemperature ] = line.split(',')
+
+  
+  // console.log(humidity) // readed humidity
+  
+  humidity = Number(humidity)
+  meanLuxP = Number(meanLuxP)
+  meanTemperature = Number(meanTemperature)
 
   endTime = performance.now()
   // console.log(endTime-startTime);
 
-  if ((endTime - startTime) > 20000 ) {
+  if ((endTime - startTime) > 2000 ) {
     startTime = performance.now();
 
-    let newData = await pushNewData(humidity);
+    // console.log(humidity, meanLuxP, meanTemperature);
+    let newData = await pushNewData(humidity,  meanLuxP, meanTemperature);
 
     // console.log('uploading....');
     console.log('uploading.... \t', newData);

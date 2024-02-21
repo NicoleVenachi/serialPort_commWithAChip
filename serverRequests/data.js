@@ -42,24 +42,27 @@ function get(lastFilter) {
     })
 }
 
-async function pushNewData(humidity) {
+async function pushNewData(humidity, meanLuxP, meanTemperature) {
 
   return new Promise(async (resolve, reject) => {
+    // console.log('aaaaaaaaaaaa');
     try {
 
       // -- reading last register data ---
-      let {meanLuxP, meanTemperature} = await get(true)
+      // let {meanLuxP, meanTemperature} = await get(true)
 
       // simulate the light and temperature changes
-      let randomNumber = Number(Math.random().toFixed(2))
-      meanLuxP +=  randomNumber> 0.5 ? 3*randomNumber: -3*randomNumber;
+      // let randomNumber = Number(Math.random().toFixed(2))
+      // meanLuxP +=  randomNumber> 0.5 ? 3*randomNumber: -3*randomNumber;
     
-      randomNumber = Number(Math.random().toFixed(2))
-      meanTemperature +=  randomNumber> 0.5 ? 2*randomNumber: -2*randomNumber;
-      
-      humRef.push(humidity)
-      luxRef.push(Number(meanLuxP.toFixed(5)))
-      temRef.push(Number(meanTemperature.toFixed(5)))
+      // randomNumber = Number(Math.random().toFixed(2))
+      // meanTemperature +=  randomNumber> 0.5 ? 2*randomNumber: -2*randomNumber;
+  
+      // resolve('aaaa')
+      // console.log(humidity, meanLuxP, meanTemperature);
+      humRef.push(Number(humidity))
+      luxRef.push(Number(meanLuxP.toFixed(1)))
+      temRef.push(Number(meanTemperature.toFixed(1)))
 
       resolve({meanHumidity: humidity, meanLuxP, meanTemperature})
     } catch (error) {
